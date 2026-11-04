@@ -5,19 +5,44 @@
 
 ---
 
-## 0. 먼저 알아야 할 제약 (중요)
+## 0. 구현 방식 (MARINARA98 분석 반영)
 
-| 항목 | 사실 | 결론 |
+> 정정: 초안에서는 "확장으로는 앱을 리스킨할 수 없다"고 썼다. 이는 **샌드박스 확장에 한한 이야기**였다. `capabilities: ["full_page_access"]`를 주면 확장이 iframe 밖에서 돌아가므로 CSS와 JS로 앱 전체를 바꿀 수 있다. MARINARA98이 이 방식을 쓴다.
+
+| 방식 | 할 수 있는 것 | 비용 |
 |---|---|---|
-| Personal Extension | 샌드박스 iframe에서 동작하고 앱 DOM에 접근하지 못한다. 확장 CSS는 자기 창에만 적용된다 | **확장으로는 앱 전체 테마를 바꿀 수 없다** |
-| Custom Theme | `<style id="marinara-custom-theme">`에 CSS가 주입된다. 활성 테마는 1개뿐이다 | **본체는 Theme(CSS)로 만든다** |
-| 테마 sanitizer | `data:`가 아닌 `url()`, `@import`, 외부 폰트를 제거한다 | 이미지와 폰트는 모두 `data:` URI로 인라인한다. 용량에 주의한다 |
-| 홈 피드 | `HomeBrowserHub`에 안정적인 `data-*` 훅이 거의 없다 | 홈 스타일링은 Tailwind 클래스 셀렉터에 기대야 하므로 **버전업 때 가장 먼저 깨진다** |
-| 모바일 | 하단 탭바가 없고 TopBar만 있다 | CSS만으로 TopBar를 하단에 고정할 수는 있지만 요소를 추가할 수는 없다 |
+| Custom Theme (CSS만) | 색과 모양 | 요소 추가 불가. 외부 `url()`과 폰트 금지 |
+| **External Extension + `full_page_access`** | CSS 주입, 새 DOM(하단 탭바, 위젯), 앱 데이터 읽기 | 설치 문턱이 높다: `.env`의 `ENABLE_EXTERNAL_EXTENSIONS`, 위험 구역 설정, 해시 승인 |
 
-**배포 형태 권장**
-1. `mallang.theme.json` (`{ "name": "Mallang", "css": "..." }`): 실제로 앱 전체를 리스킨한다. 필수다.
-2. (선택) `mallang-companion` Personal Extension: 사이드 패널에서 팔레트 프리셋 안내와 복사용 CSS 스니펫을 제공한다. 앱 DOM은 조작하지 못하므로 설명과 복사 용도만 가능하다. 하지만 `ENABLE_EXTERNAL_EXTENSIONS`, Danger Zone 설정, 해시 승인을 모두 거쳐야 해서 일반 사용자에게는 진입 장벽이 크다. **v1에서는 빼는 쪽을 권한다.**
+**결정: MARINARA98과 같은 External Extension 1개로 만든다.**
+
+```json
+{
+  "kind": "marinara.personal-extension", "version": 1,
+  "config": {
+    "name": "Mallang", "version": "0.1.0", "runtime": "client",
+    "capabilities": ["full_page_access"],
+    "jsPath": "mallang.js", "cssPath": "mallang.css"
+  }
+}
+```
+
+**MARINARA98에서 가져올 패턴**
+- **CSS 256 KiB 한도.** 폰트는 CSS가 아니라 JS 안의 `data:` URL로 넣고 `<style id>`로 주입한다(MARINARA98 js:976-983).
+- **정리 처리.** `listen()`으로 리스너를 등록해 두고, `marinara.onCleanup`에서 주입한 노드, `data-*` 속성, CSS 변수를 모두 제거한다(js:886, 2446).
+- **저장.** `marinara.storage` 객체 하나에 `patch`를 debounce해서 쓴다. localStorage는 쓰지 않는다.
+- **데이터는 읽기만.** `marinara.fetch("/api/chats" | "/api/characters")`로 가져오고, 쓰기는 하지 않는다.
+- **채팅 전환.** 직접 API를 호출하지 않고 Marinara의 UI 버튼을 대신 클릭한다(js:1062). 안전하지만 앱 DOM이 바뀌면 깨지기 쉽다.
+
+**MARINARA98에서 따라 하지 않을 것**
+- **바탕화면, 작업 표시줄, 창 프레임 메타포.** 프레임 46px와 작업 표시줄 36px가 세로 공간을 먹는다. 작은 모니터에서는 치명적이다(§6).
+- **700ms마다 `textarea[data-chat-id]`를 폴링하는 방식.** 대신 `[data-component="CenterContent"]`의 childList를 MutationObserver 하나로 관찰한다.
+- **10–11px 도트 폰트.** 저DPI 노트북 화면에서는 가독성이 떨어진다. 본문 14px 이상을 유지한다.
+- **CSS 토큰마다 `!important`.** 프리셋 inline style을 이기려고 붙인 것인데 필요한 이유는 이해된다. 다만 `--background` 등 핵심 토큰에만 한정한다.
+
+**남은 제약**
+- 홈 피드(`HomeBrowserHub`)에는 안정적인 훅이 없다. MARINARA98은 `.mari-home-*` 클래스를 쓰는데, 이 클래스들이 v2.5.1에 실제로 있는지 확인하는 점검표가 필요하다.
+- `full_page_access`는 사용자 입장에서 "페이지 전체를 넘겨주는" 권한이다. 신뢰를 얻으려면 README에 하는 일과 하지 않는 일을 명시해야 한다.
 
 ---
 
@@ -179,38 +204,91 @@ flowchart LR
 
 ---
 
-## 6. 내비게이션 (TopBar)
+## 6. 작은 모니터 우선 레이아웃
+
+**기준 해상도:** 1366×768 / 1280×720 노트북. 브라우저 UI를 빼면 실제 뷰포트는 약 **1280×620**이다. 높이가 가장 큰 제약이므로 **세로 크롬(상단과 하단 고정 UI)을 최소화한다.**
+
+### 6.1 세로 예산 (뷰포트 높이 620px 기준)
+| 영역 | Marinara 기본 | MARINARA98 | **Mallang** |
+|---|---|---|---|
+| TopBar | 48 | 48 | **40** |
+| 창 프레임(제목·상태) | 0 | 46 | **0** |
+| 작업 표시줄 | 0 | 36 | **0** (데스크톱에는 하단 바 없음) |
+| 입력창(1줄) | ~64 | ~70 | **52** |
+| **메시지 영역** | ~508 | ~420 | **~528** |
+
+### 6.2 브레이크포인트 (너비와 높이를 같이 본다)
+| 이름 | 조건 | 레이아웃 |
+|---|---|---|
+| `phone` | `max-width: 767px` | 패널 1개. **JS로 하단 탭바 주입**(높이 56, 아래 safe-area 포함) |
+| `compact` | 768–1279px | 채팅 사이드바를 **아이콘 레일(64px)**로 접는다. 오른쪽 패널은 오버레이 시트로 띄운다 |
+| `laptop` | 1280–1599px | 사이드바 240px, 채팅 영역 가변, 오른쪽 패널은 **기본 닫힘**. 열면 오버레이로 띄우고 고정(pin)은 옵션으로 둔다 |
+| `wide` | ≥1600px | 사이드바 280, 채팅 최대 760, 오른쪽 패널 360 고정 |
+| `short` | `max-height: 760px` (위와 중첩 적용) | 밀도 모드: 카드 패딩 16→10, Stat Tile 숫자 40→28, 홈 위젯 2열을 3열로, 오프셋 그림자 4→2px |
+
+- **JS 감지:** `innerWidth` 비교 대신 `matchMedia`를 구독해서 `data-mallang-size`, `data-mallang-short`를 `:root`에 쓰고, CSS는 이 속성만 본다.
+- **사용자 설정:** "밀도: 자동 / 편안 / 촘촘". 자동이면 위 표를 따른다.
+
+### 6.3 작은 모니터 와이어 (laptop + short, 1280×620)
+```
+┌40─ ☁ Mallang   [홈][채팅][캐릭터][⚙]          🔍 ─────────┐
+│ 사이드바 240      │ 채팅 (가변, 본문 최대 720 가운데 정렬)      │
+│ ╭ 대화 ─── 12 › ╮│ 리나 · roleplay                      [⋯] │
+│ │● 리나     2m  ││ ┌────────────────────────────┐          │
+│ │○ 탐정단   1h  ││ │ 캐릭터 메시지 (카드)          │          │
+│ │○ 카페     어제 ││ └────────────────────────────┘          │
+│ ╰──────────────╯│            ┌──────────────┐               │
+│ [+ 새 채팅]      │            │ 유저 메시지     │               │
+│                  │ (+) [ 메시지 입력…           ] [보내기] 52 │
+└──────────────────┴──────────────────────────────────────────┘
+   오른쪽 패널(캐릭터·설정)은 오른쪽 위에서 360px 오버레이 시트로 띄우고 Esc로 닫는다
+```
+
+### 6.4 홈 피드 (laptop + short)
+- 스크롤 없이 첫 화면에 들어와야 하는 것: **새 채팅 Pill, 최근 채팅 3개, Stat 3개.** 캘린더와 캐릭터 가로 스크롤은 첫 화면 아래로 밀려도 된다.
+- 2열 그리드로 배치한다. 왼쪽은 Continue(최근 채팅), 오른쪽은 Stat과 Calendar를 쌓는다. 너비 1280에서 열당 약 480px다.
+
+## 7. 내비게이션
 
 | 뷰포트 | 처리 |
 |---|---|
-| 데스크톱 | TopBar를 그대로 두고 높이를 56px로 키운다. 아이콘 버튼(`[data-topbar-hover-key]`)을 원형 Pill로 바꾸고 활성 상태는 `--accent` 채움으로 표시한다 |
-| 모바일 (≤767px) | **선택 옵션:** TopBar를 `position: fixed; bottom` 하단 탭바로 옮긴다(레퍼런스 4·5·6). 다만 `AppShell.tsx:134`의 오버레이 top 오프셋(`env(safe-area-inset-top)+3rem`)과 iOS 키보드 처리(`data-mari-software-keyboard-open`)를 함께 덮어써야 해서 **회귀 위험이 높다.** v1에서는 끄고 v1.1에서 실험 플래그로 넣는다 |
+| laptop / wide | TopBar를 40px로 줄인다. 아이콘 버튼(`[data-topbar-hover-key]`)은 원형으로 바꾸고 활성 상태는 `--accent` 채움으로 표시한다 |
+| compact | TopBar와 왼쪽 아이콘 레일. 레일은 JS로 주입하고, 클릭하면 기존 TopBar 버튼을 대신 클릭한다(MARINARA98 방식) |
+| phone | **하단 탭바 주입**(홈, 채팅, 캐릭터, 설정). TopBar는 제목만 남긴다. `AppShell.tsx:134`의 오버레이 top 오프셋과 `data-mari-software-keyboard-open` 대응이 **필수**다. 키보드가 열리면 탭바를 숨긴다 |
 
 ---
 
-## 7. 구현 셀렉터 우선순위 (안정성 순)
+## 8. 구현 셀렉터 우선순위 (안정성 순)
 1. **CSS 변수 덮어쓰기:** 가장 안전하다. 전체 효과의 약 70%를 여기서 낸다.
 2. **`data-component` / `data-chat-mode` / `data-message-role` 등 data 속성:** 비교적 안전하다.
 3. **`.mari-*` / `.marinara-*` 문서화된 클래스:** 안전하다(공식 문서에 있는 클래스).
 4. **Tailwind 유틸 클래스 조합 셀렉터 (홈 피드):** **취약하다.** 별도의 `home.css` 블록으로 격리하고, 버전마다 점검표로 확인한다.
 
-## 8. 파일 구조 제안
+## 9. 파일 구조 제안
 ```
 mallang-ui/
 ├─ src/
-│  ├─ tokens.css        # 1단계: 변수만 (light/dark)
-│  ├─ components.css    # 카드·Pill·모달·윈도우
-│  ├─ chat.css          # 채팅·입력창·사이드바
-│  ├─ library.css       # 캐릭터 라이브러리
-│  ├─ home.css          # 취약 셀렉터 격리
-│  └─ assets/           # SVG → 빌드 시 data: URI 인라인
-├─ build.mjs            # src/*.css 합치기 → dist/mallang.theme.json
+│  ├─ css/
+│  │  ├─ tokens.css     # 변수 (light/dark)
+│  │  ├─ density.css    # data-mallang-size / -short 별 밀도
+│  │  ├─ components.css # 카드·Pill·모달·윈도우
+│  │  ├─ chat.css       # 채팅·입력창·사이드바
+│  │  ├─ library.css    # 캐릭터 라이브러리
+│  │  └─ home.css       # 취약 셀렉터 격리
+│  └─ js/
+│     ├─ main.js        # 엔트리, cleanup 레지스트리
+│     ├─ viewport.js    # matchMedia → data-mallang-*
+│     ├─ nav.js         # 아이콘 레일 / 하단 탭바 주입
+│     └─ assets.js      # SVG 아이콘, (선택) 폰트 data URL
+├─ build.mjs            # → dist/Mallang/{manifest.json,mallang.css,mallang.js} + zip, CSS 256KiB 검사
 └─ docs/UX-FLOW.md
 ```
 
-## 9. 리스크 요약
-- Marinara 업데이트 때 홈 피드 셀렉터가 깨진다. 버전을 `2.5.1`로 고정하고 점검표를 둔다.
+## 10. 리스크 요약
+- **`full_page_access`의 설치 문턱과 신뢰 문제.** 사용자 대부분은 `.env`를 수정하지 않는다. 목표 사용자층을 좁게 잡는다.
+- **Marinara 업데이트 때 DOM이 바뀐다.** 홈 피드 셀렉터와 "버튼 대신 클릭" 로직이 가장 먼저 깨진다. 버전을 `2.5.1`로 고정하고 점검표를 둔다.
+- **다른 전체 테마와 충돌한다.** MARINARA98과 동시에 켜면 깨진다. 시작할 때 `#m98-root`를 감지하면 경고를 띄운다.
 - 2px 외곽선과 그림자가 game 모드나 카드 CSS와 충돌한다. 두 곳 모두 범위에서 제외한다.
 - 크림 배경과 회색 텍스트 조합이 WCAG AA(4.5:1)에 못 미칠 수 있다. `--muted-foreground`는 실측 후 확정한다.
-- `data:` 폰트와 이미지를 넣으면 테마 JSON이 커진다. 서버 저장 한도는 아직 확인하지 않았으므로 구현 전에 확인해야 한다.
+- 오버레이로 띄운 오른쪽 패널(laptop)이 채팅을 가린다. 예전처럼 고정해서 쓰던 사용자를 위해 고정(pin) 옵션을 둔다.
 - 레퍼런스(nonDo, Dumi 등)의 로고, 마스코트, 레이아웃을 그대로 복제하지 않는다. 구름 마스코트는 새로 그린다.
