@@ -1,4 +1,4 @@
-/* Mallang 0.1.0 - soft pastel theme for Marinara Engine v2.5.1.
+/* Mallang 0.3.0 - soft pastel card theme for Marinara Engine v2.5.1.
    Runs as a full_page_access personal extension: this file is the body of an
    async function that receives the `marinara` API. Everything created here is
    removed again in the marinara.onCleanup callback at the bottom. */
@@ -89,7 +89,8 @@ const paintBacking = () => {
       return;
     }
     root.style.setProperty("background-color", color, "important");
-    document.body.style.setProperty("background-color", color, "important");
+    // body stays clear so the backdrop (z-index -1 under the root) shows through.
+    document.body.style.setProperty("background-color", "transparent", "important");
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", color);
   }, "page backing");
 };
@@ -226,7 +227,80 @@ if (document.getElementById("m98-root")) {
   document.body.append(toast);
 }
 
-marinara?.log?.info?.("Mallang 0.1.0 started");
+// ---- backdrop: soft pastel blobs + one dashed doodle line, behind the app ----
+const backdrop = document.createElement("div");
+backdrop.className = "mallang-backdrop";
+backdrop.setAttribute("aria-hidden", "true");
+for (const name of ["peach", "mint", "lav", "line"]) {
+  const el = document.createElement("i");
+  el.className = `ml-${name}`;
+  backdrop.append(el);
+}
+document.body.prepend(backdrop);
+
+// ---- home hero: big greeting + this week's date strip ----
+const hero = document.createElement("div");
+hero.className = "mallang-hero";
+const heroTitle = document.createElement("h2");
+heroTitle.className = "mlg-title";
+const week = document.createElement("ol");
+week.className = "mlg-week";
+week.setAttribute("aria-hidden", "true");
+hero.append(heroTitle, week);
+const DAY_NAMES = ["일", "월", "화", "수", "목", "금", "토"];
+let weekKey = "";
+const renderWeek = () => {
+  const today = new Date();
+  const key = today.toDateString();
+  if (key === weekKey) return;
+  weekKey = key;
+  // Monday-first week around today.
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(monday);
+    day.setDate(monday.getDate() + i);
+    const li = document.createElement("li");
+    if (day.toDateString() === key) li.className = "is-today";
+    const name = document.createElement("span");
+    name.textContent = DAY_NAMES[day.getDay()];
+    const num = document.createElement("b");
+    num.textContent = String(day.getDate());
+    li.append(name, num);
+    days.push(li);
+  }
+  week.replaceChildren(...days);
+};
+renderWeek();
+const weekTimer = marinara?.setInterval ? marinara.setInterval(renderWeek, 60000) : null;
+const syncHero = () => {
+  const host = document.querySelector(".mari-home-hero");
+  if (!host) return;
+  if (hero.parentElement !== host) {
+    // Reuse the engine's own greeting so it follows the UI language.
+    heroTitle.textContent = host.querySelector("h1")?.textContent?.trim() || "오늘은 어떤 이야기를 시작할까요?";
+    host.prepend(hero);
+  }
+};
+
+// ---- current view (home / chat / other) for view-specific styling ----
+let viewDebounce = null;
+const syncView = () => {
+  const view = chatIsOpen() ? "chat" : document.querySelector('[data-component="HomeBrowserHub"]') ? "home" : "other";
+  if (root.getAttribute("data-mallang-view") !== view) root.setAttribute("data-mallang-view", view);
+  syncHero();
+};
+const viewObserver = new MutationObserver(() => {
+  if (!viewDebounce) viewDebounce = later(() => {
+    viewDebounce = null;
+    syncView();
+  }, 120);
+});
+viewObserver.observe(document.getElementById("root") || document.body, { childList: true, subtree: true });
+syncView();
+
+marinara?.log?.info?.("Mallang 0.3.0 started");
 
 // ---- cleanup ----
 marinara.onCleanup(() => {
@@ -236,6 +310,11 @@ marinara.onCleanup(() => {
   observer?.disconnect();
   observer = null;
   themeObserver.disconnect();
+  viewObserver.disconnect();
+  if (viewDebounce) cancel(viewDebounce);
+  if (weekTimer && marinara.clearInterval) marinara.clearInterval(weekTimer);
+  backdrop.remove();
+  hero.remove();
   probe.remove();
   for (const fn of cleanups.splice(0).reverse()) safe(fn, "cleanup");
   nav?.remove();
@@ -250,7 +329,7 @@ marinara.onCleanup(() => {
       if (savedBacking.meta) document.querySelector('meta[name="theme-color"]')?.setAttribute("content", savedBacking.meta);
     }
   }, "restore backing");
-  for (const name of ["data-mallang", "data-mallang-size", "data-mallang-short", "data-mallang-nav", "data-mallang-motion"]) {
+  for (const name of ["data-mallang", "data-mallang-size", "data-mallang-short", "data-mallang-nav", "data-mallang-motion", "data-mallang-view"]) {
     root.removeAttribute(name);
   }
 });
