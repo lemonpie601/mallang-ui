@@ -1,0 +1,227 @@
+/* Mallang 0.1.0 - soft pastel reskin for Marinara Engine v2.5.1.
+   Every rule is scoped under html[data-mallang="on"], so removing that
+   attribute (extension disabled) restores the original look at once. */
+
+/* ---- 1. Palette tokens (concept values) ---- */
+html[data-mallang="on"] {
+  --ml-milk: #FAF7F1; --ml-page: #F3EEE4; --ml-paper: #FFFFFF; --ml-ink: #3A3450; --ml-ink-soft: #6E6884;
+  --ml-line: #E7E1D6; --ml-accent: #F2B544; --ml-on-accent: #3A3450; --ml-sage: #CFE3D4; --ml-peach: #F7CBBE;
+  --ml-lav: #DCD3F0; --ml-butter: #F6E5A8; --ml-mist: #DDE3EA; --ml-ol: #3A3450; --ml-blush: #F4A9A8;
+  --ml-focus: #5B4BC4; --ml-rail: #EDE6D8; --ml-coral: #B5414A;
+  --ml-w: 1.5px; --ml-drop: 3px;
+  --ml-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ml-ease-edge: cubic-bezier(.22, 1, .36, 1);
+  --ml-font: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+html[data-mallang="on"]:not([data-theme="light"]) {
+  --ml-milk: #211B2F; --ml-page: #181322; --ml-paper: #2E2742; --ml-ink: #F0EAF7; --ml-ink-soft: #B3A9C8;
+  --ml-line: #3C3455; --ml-accent: #E3AA45; --ml-on-accent: #2B2010; --ml-sage: #3E5848; --ml-peach: #6B4A4A;
+  --ml-lav: #4C4468; --ml-butter: #6A5E38; --ml-mist: #3F4858; --ml-ol: #0F0A18; --ml-blush: #C9787C;
+  --ml-focus: #C9B8FF; --ml-rail: #2A2339; --ml-coral: #F2A0A0;
+}
+
+/* ---- 2. Marinara token override (!important beats inline presets on <html>) ---- */
+html[data-mallang="on"] {
+  --background: var(--ml-milk) !important;
+  --marinara-app-background-paint: var(--ml-milk) !important;
+  --foreground: var(--ml-ink) !important;
+  --card: var(--ml-paper) !important;
+  --card-foreground: var(--ml-ink) !important;
+  --popover: var(--ml-paper) !important;
+  --popover-foreground: var(--ml-ink) !important;
+  --primary: var(--ml-focus) !important;
+  --primary-foreground: #FFFFFF !important;
+  --secondary: var(--ml-sage) !important;
+  --secondary-foreground: var(--ml-ink) !important;
+  --muted: var(--ml-rail) !important;
+  --muted-foreground: var(--ml-ink-soft) !important;
+  --accent: var(--ml-butter) !important;
+  --accent-foreground: var(--ml-ink) !important;
+  --destructive: var(--ml-coral) !important;
+  --destructive-foreground: #FFFFFF !important;
+  --border: var(--ml-line) !important;
+  --input: var(--ml-line) !important;
+  --ring: var(--ml-focus) !important;
+  --radius: 1.1rem !important;
+  --sidebar: var(--ml-rail) !important;
+  --sidebar-foreground: var(--ml-ink) !important;
+  --sidebar-border: var(--ml-line) !important;
+  --sidebar-accent: var(--ml-sage) !important;
+  --sidebar-accent-foreground: var(--ml-ink) !important;
+  --glow-primary: transparent;
+  --glow-accent: transparent;
+  --marinara-conversation-gradient-from: var(--ml-milk);
+  --marinara-conversation-gradient-to: var(--ml-page);
+  --marinara-topbar-surface: var(--ml-milk);
+  --marinara-topbar-border: var(--ml-line);
+  --marinara-shell-edge-border: var(--ml-line);
+  --marinara-app-accent-solid: var(--ml-focus);
+  --marinara-app-accent-static: var(--ml-focus);
+  --marinara-app-accent-gradient: linear-gradient(90deg, var(--ml-peach), var(--ml-lav), var(--ml-sage));
+  --marinara-app-accent-static-gradient: linear-gradient(90deg, var(--ml-peach), var(--ml-lav), var(--ml-sage));
+  --marinara-chat-chrome-accent: var(--ml-focus);
+  --marinara-chat-chrome-accent-gradient: var(--marinara-app-accent-gradient);
+  --marinara-chat-chrome-text: var(--ml-ink);
+  --marinara-chat-chrome-surface-bg: var(--ml-paper);
+  --marinara-chat-chrome-button-bg: var(--ml-paper);
+  --marinara-chat-chrome-button-border: var(--ml-ol);
+  --marinara-chat-chrome-button-border-hover: var(--ml-ol);
+  --marinara-chat-chrome-button-border-active: var(--ml-ol);
+  --marinara-chat-chrome-button-text: var(--ml-ink);
+  --marinara-chat-chrome-button-text-hover: var(--ml-ink);
+  --marinara-chat-chrome-button-text-active: var(--ml-ink);
+  --marinara-chat-chrome-panel-bg: var(--ml-paper);
+  --marinara-chat-chrome-panel-border: var(--ml-ol);
+  --marinara-chat-chrome-panel-divider: var(--ml-line);
+  --marinara-chat-chrome-panel-text: var(--ml-ink);
+  --marinara-chat-chrome-panel-title: var(--ml-ink);
+  --marinara-chat-chrome-panel-muted: var(--ml-ink-soft);
+  --marinara-chat-chrome-input-bg: var(--ml-paper);
+  --marinara-chat-chrome-input-border: var(--ml-ol);
+  --marinara-chat-chrome-input-border-focus: var(--ml-focus);
+  --marinara-chat-chrome-highlight-bg: color-mix(in srgb, var(--ml-accent) 30%, transparent);
+  --marinara-chat-chrome-highlight-bg-hover: color-mix(in srgb, var(--ml-accent) 42%, transparent);
+  --marinara-chat-chrome-highlight-text: var(--ml-ink);
+  --marinara-chat-chrome-focus-ring: color-mix(in srgb, var(--ml-focus) 40%, transparent);
+  --mari-window-bg: var(--ml-paper);
+  --mari-window-border: var(--ml-ol);
+  font-family: var(--ml-font);
+}
+html[data-mallang="on"] body { font-family: var(--ml-font); background: var(--ml-milk) !important; }
+
+/* ---- 3. Shared outline / squish vocabulary ---- */
+html[data-mallang="on"] [data-component="TopBar"].mari-topbar { border-bottom: var(--ml-w) solid var(--ml-line); }
+html[data-mallang="on"] .mari-window:not([data-chat-mode="game"] *),
+html[data-mallang="on"] .mari-modal-panel,
+html[data-mallang="on"] .marinara-chat-popover:not(.mari-window):not([data-chat-mode="game"] *),
+html[data-mallang="on"] .marinara-chat-input-shell:not([data-chat-mode="game"] *) {
+  border: var(--ml-w) solid var(--ml-ol) !important;
+  border-radius: calc(var(--radius) + .1rem) !important;
+  box-shadow: 0 var(--ml-drop) 0 var(--ml-ol) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html[data-mallang="on"] .mari-window__header,
+html[data-mallang="on"] .mari-drawer__header { font-weight: 700; }
+html[data-mallang="on"] .mari-drawer:not([data-chat-mode="game"] *) { border-bottom: var(--ml-w) dashed var(--ml-line); }
+html[data-mallang="on"] .mari-drawer__count { background: var(--ml-lav); color: var(--ml-ink); border: 1px solid var(--ml-ol); }
+
+/* Pill buttons + squish */
+html[data-mallang="on"] [data-component="TopBar"] button,
+html[data-mallang="on"] .marinara-chat-toolbar-button:not([data-chat-mode="game"] *),
+html[data-mallang="on"] .marinara-chat-input-shell button:not([data-chat-mode="game"] *),
+html[data-mallang="on"] .mari-window__control,
+html[data-mallang="on"] [data-chat-mode-tab],
+html[data-mallang="on"] [data-component="ChatSidebar"] button {
+  border-radius: 999px;
+  transition: transform .5s var(--ml-spring), box-shadow .2s, background-color .2s, color .2s;
+}
+html[data-mallang="on"] .marinara-chat-toolbar-button:not([data-chat-mode="game"] *) {
+  border: var(--ml-w) solid var(--ml-ol);
+  background: var(--ml-paper);
+  box-shadow: 0 2px 0 var(--ml-ol);
+}
+html[data-mallang="on"] [data-component="TopBar"] button[aria-pressed="true"],
+html[data-mallang="on"] [data-chat-mode-tab][aria-pressed="true"] {
+  background: var(--ml-accent) !important; color: var(--ml-on-accent) !important;
+  box-shadow: inset 0 0 0 var(--ml-w) var(--ml-ol);
+}
+html[data-mallang="on"] [data-component="TopBar"] button[aria-pressed="true"] svg,
+html[data-mallang="on"] [data-chat-mode-tab][aria-pressed="true"] * { color: var(--ml-on-accent) !important; stroke: currentColor; }
+html[data-mallang="on"] [data-component="TopBar"] button:hover,
+html[data-mallang="on"] .marinara-chat-toolbar-button:not([data-chat-mode="game"] *):hover { transform: translateY(-1px); }
+html[data-mallang="on"] [data-component="TopBar"] button:active,
+html[data-mallang="on"] .marinara-chat-toolbar-button:not([data-chat-mode="game"] *):active,
+html[data-mallang="on"] .marinara-chat-input-shell button:not([data-chat-mode="game"] *):active,
+html[data-mallang="on"] [data-chat-mode-tab]:active,
+html[data-mallang="on"] [data-component="ChatSidebar"] button:active { transform: translateY(2px) scale(1.03, .95); }
+html[data-mallang="on"] :focus-visible { outline-color: var(--ml-focus); }
+
+/* ---- 4. Sections: sidebar, panels, home ---- */
+html[data-mallang="on"] [data-component="ChatSidebar"],
+html[data-mallang="on"] [data-component="ChatSidebarPanel"] { background: var(--ml-rail) !important; border-right: var(--ml-w) solid var(--ml-line); }
+html[data-mallang="on"] [data-component="ChatSidebar"] [data-chat-mode-tab][aria-pressed="true"] { background: var(--ml-sage) !important; }
+html[data-mallang="on"] [data-component="RightPanel"],
+html[data-mallang="on"] [data-component="RightPanelDesktop"] { background: var(--ml-milk); border-left: var(--ml-w) solid var(--ml-ol); }
+html[data-mallang="on"] [data-component="CharacterLibraryView"] {
+  background: color-mix(in srgb, var(--ml-peach) 28%, var(--ml-milk)) !important;
+  background-image: none !important;
+}
+html[data-mallang="on"] [data-component="CenterContent"] { background: var(--ml-milk); }
+html[data-mallang="on"] [data-component="HomeBrowserHub"] { background: var(--ml-milk); }
+
+/* ---- 5. Chat ---- */
+html[data-mallang="on"] .marinara-chat-input-shell:not([data-chat-mode="game"] *) { background: var(--ml-paper) !important; }
+html[data-mallang="on"] [data-message-role]:not([data-card-css]):not([data-chat-mode="game"] *) .mari-message-avatar > * {
+  border: var(--ml-w) solid var(--ml-ol); border-radius: 50%;
+}
+html[data-mallang="on"] [data-chat-mode="game"] .marinara-chat-input-shell { border: 0; }
+
+/* ---- 6. Density ---- */
+html[data-mallang="on"][data-mallang-size="laptop"] [data-component="TopBar"].mari-topbar,
+html[data-mallang="on"][data-mallang-size="compact"] [data-component="TopBar"].mari-topbar,
+html[data-mallang="on"][data-mallang-size="wide"] [data-component="TopBar"].mari-topbar { height: 40px !important; }
+html[data-mallang="on"][data-mallang-size="laptop"] [data-component="ChatSidebarSlot"]:not([aria-hidden="true"]),
+html[data-mallang="on"][data-mallang-size="laptop"] [data-component="ChatSidebarSlot"]:not([aria-hidden="true"]) [data-component="ChatSidebarPanel"] { width: 232px !important; }
+html[data-mallang="on"][data-mallang-size="laptop"] [data-component="ChatSidebarSlot"] + [role="separator"] { display: none; }
+html[data-mallang="on"][data-mallang-short] [data-component="TopBar"].mari-topbar { height: 40px !important; }
+@media (pointer: fine) {
+  html[data-mallang="on"][data-mallang-size="laptop"] [data-component="TopBar"] .mari-topbar-action,
+  html[data-mallang="on"][data-mallang-short] [data-component="TopBar"] .mari-topbar-action { width: 30px; height: 30px; }
+}
+html[data-mallang="on"][data-mallang-short] .marinara-chat-input-shell:not([data-chat-mode="game"] *) { padding-block: .3rem !important; --ml-drop: 2px; }
+html[data-mallang="on"][data-mallang-short] .mari-drawer__header { padding-block: .35rem !important; min-height: 0 !important; }
+html[data-mallang="on"][data-mallang-size="laptop"] .mari-drawer__header { padding-block: .35rem !important; min-height: 0 !important; }
+html[data-mallang="on"][data-mallang-short] .mari-window,
+html[data-mallang="on"][data-mallang-short] .mari-modal-panel { --ml-drop: 2px; }
+/* Chat Settings drawer: drag-and-drop hint paragraph (ChatSettingsDrawer data-chat-settings-top-row) */
+html[data-mallang="on"] [data-chat-settings-top-row] { display: none !important; }
+
+/* ---- 7. Phone ---- */
+html[data-mallang="on"][data-mallang-size="phone"] body { padding-bottom: 0; }
+html[data-mallang="on"][data-mallang-size="phone"][data-mallang-nav="on"] [data-component="CenterContent"] {
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+}
+.mallang-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: flex; justify-content: center; gap: 6px;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: var(--ml-paper, #fff);
+  border-top: 1.5px solid var(--ml-ol, #3A3450);
+  box-shadow: 0 80px 0 var(--ml-paper, #fff);
+  transition: transform .3s var(--ml-ease-edge, cubic-bezier(.22, 1, .36, 1)), opacity .2s;
+  font-family: var(--ml-font);
+}
+.mallang-nav[hidden] { display: none; }
+.mallang-nav button {
+  flex: 1; max-width: 96px; min-height: 44px; padding: 4px 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; line-height: 1.2;
+  font: inherit; font-size: 13px; font-weight: 700; color: var(--ml-ink, #3A3450);
+  background: var(--ml-milk, #FAF7F1); border: 1.5px solid var(--ml-ol, #3A3450); border-radius: 999px;
+  box-shadow: 0 2px 0 var(--ml-ol, #3A3450); cursor: pointer;
+  transition: transform .5s var(--ml-spring, cubic-bezier(.34, 1.56, .64, 1)), background-color .2s;
+}
+.mallang-nav button:active { transform: translateY(2px) scale(1.03, .95); }
+.mallang-nav button[aria-current="true"] { background: var(--ml-accent, #F2B544); color: var(--ml-on-accent, #3A3450); }
+.mallang-nav .ml-ic { font-size: 16px; line-height: 1; }
+.mallang-toast {
+  position: fixed; left: 50%; top: 12px; z-index: 2147483000; max-width: min(92vw, 420px);
+  transform: translateX(-50%); display: flex; align-items: center; gap: 10px;
+  padding: 8px 8px 8px 14px; font: 600 13px/1.4 var(--ml-font); color: var(--ml-ink, #3A3450);
+  background: var(--ml-butter, #F6E5A8); border: 1.5px solid var(--ml-ol, #3A3450); border-radius: 999px;
+  box-shadow: 0 3px 0 var(--ml-ol, #3A3450);
+}
+.mallang-toast button {
+  font: inherit; color: inherit; background: var(--ml-paper, #fff); border: 1.5px solid var(--ml-ol, #3A3450);
+  border-radius: 999px; width: 26px; height: 26px; cursor: pointer; line-height: 1;
+}
+
+/* ---- 8. Motion off / reduced ---- */
+html[data-mallang="on"][data-mallang-motion="off"] *, html[data-mallang="on"][data-mallang-motion="off"] *::before,
+html[data-mallang-motion="off"] .mallang-nav, html[data-mallang-motion="off"] .mallang-nav * { transition: none !important; animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-mallang="on"] [data-component="TopBar"] button, html[data-mallang="on"] .marinara-chat-toolbar-button, html[data-mallang="on"] .marinara-chat-input-shell button,
+  html[data-mallang="on"] [data-chat-mode-tab], html[data-mallang="on"] [data-component="ChatSidebar"] button, .mallang-nav, .mallang-nav button { transition: none !important; }
+  html[data-mallang="on"] [data-component="TopBar"] button:active, html[data-mallang="on"] .marinara-chat-toolbar-button:active,
+  html[data-mallang="on"] .marinara-chat-input-shell button:active, .mallang-nav button:active { transform: none !important; }
+}

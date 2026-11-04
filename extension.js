@@ -1,0 +1,216 @@
+/* Mallang 0.1.0 - soft pastel theme for Marinara Engine v2.5.1.
+   Runs as a full_page_access personal extension: this file is the body of an
+   async function that receives the `marinara` API. Everything created here is
+   removed again in the marinara.onCleanup callback at the bottom. */
+
+const SIZE_QUERIES = {
+  phone: "(max-width: 767px)",
+  compact: "(min-width: 768px) and (max-width: 1279px)",
+  laptop: "(min-width: 1280px) and (max-width: 1599px)",
+  wide: "(min-width: 1600px)",
+};
+const SHORT_QUERY = "(max-height: 760px)";
+const NAV_ITEMS = [
+  { key: "home", label: "홈", icon: "⌂", selector: '[data-component="TopBar"] [data-topbar-hover-key="home"]' },
+  { key: "chats", label: "대화", icon: "✉", selector: '[data-component="TopBar"] [data-topbar-hover-key="chats"]' },
+  { key: "characters", label: "서재", icon: "❀", selector: '[data-component="TopBar"] [data-tour="panel-characters"]' },
+  { key: "settings", label: "작업실", icon: "✎", selector: '[data-component="TopBar"] [data-tour="panel-settings"]' },
+];
+
+const root = document.documentElement;
+const cleanups = [];
+const listen = (target, type, handler, options) => {
+  target.addEventListener(type, handler, options);
+  cleanups.push(() => target.removeEventListener(type, handler, options));
+};
+const safe = (fn, label) => {
+  try {
+    return fn();
+  } catch (error) {
+    marinara?.log?.warn?.(`Mallang: ${label || "step"} failed`, error);
+    return undefined;
+  }
+};
+const later = (fn, ms) => (marinara?.setTimeout ? marinara.setTimeout(fn, ms) : window.setTimeout(fn, ms));
+const cancel = (id) => (marinara?.clearTimeout ? marinara.clearTimeout(id) : window.clearTimeout(id));
+
+// ---- settings (marinara.storage) ----
+let settings = { motion: "on" };
+const loaded = await safe(() => marinara?.storage?.get?.(), "storage read");
+if (loaded && (loaded.motion === "on" || loaded.motion === "off")) settings.motion = loaded.motion;
+let saveTimer = null;
+const saveSettings = () => {
+  if (saveTimer) cancel(saveTimer);
+  saveTimer = later(() => {
+    saveTimer = null;
+    Promise.resolve(safe(() => marinara?.storage?.patch?.({ motion: settings.motion }), "storage write")).catch(() => {});
+  }, 300);
+};
+const applyMotion = () => {
+  if (settings.motion === "off") root.setAttribute("data-mallang-motion", "off");
+  else root.removeAttribute("data-mallang-motion");
+};
+const api = {
+  setMotion(value) {
+    settings.motion = value === "off" ? "off" : "on";
+    applyMotion();
+    saveSettings();
+  },
+  getSettings: () => ({ ...settings }),
+};
+window.__mallang = api;
+cleanups.push(() => {
+  if (window.__mallang === api) delete window.__mallang;
+});
+
+// ---- on switch ----
+root.setAttribute("data-mallang", "on");
+applyMotion();
+
+// Fonts: Marinara's CSP (style-src 'self' 'unsafe-inline', font-src 'self' data:)
+// blocks Google Fonts, so Mallang uses the system Korean font stack from the CSS.
+
+// ---- viewport watcher ----
+const mqs = Object.entries(SIZE_QUERIES).map(([name, q]) => [name, window.matchMedia(q)]);
+const shortMq = window.matchMedia(SHORT_QUERY);
+let lastSize = "";
+const syncViewport = () => {
+  const hit = mqs.find(([, mq]) => mq.matches);
+  const size = hit ? hit[0] : "wide";
+  if (size !== lastSize) {
+    lastSize = size;
+    root.setAttribute("data-mallang-size", size);
+    syncNav();
+  }
+  if (shortMq.matches) root.setAttribute("data-mallang-short", "");
+  else root.removeAttribute("data-mallang-short");
+};
+for (const [, mq] of [...mqs, ["short", shortMq]]) listen(mq, "change", () => syncViewport());
+
+// ---- phone bottom nav ----
+let nav = null;
+let observer = null;
+let observed = null;
+let debounce = null;
+
+const chatIsOpen = () => !!document.querySelector('[data-component="CenterContent"] [data-chat-mode]:not(button, a), [data-component="CenterContent"] textarea[data-chat-composer]');
+const keyboardOpen = () => root.hasAttribute("data-mari-software-keyboard-open");
+
+const buildNav = () => {
+  const el = document.createElement("nav");
+  el.className = "mallang-nav";
+  el.setAttribute("aria-label", "Mallang");
+  el.hidden = true;
+  for (const item of NAV_ITEMS) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.mallangNav = item.key;
+    const icon = document.createElement("span");
+    icon.className = "ml-ic";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = item.icon;
+    const label = document.createElement("span");
+    label.textContent = item.label;
+    button.append(icon, label);
+    button.addEventListener("click", () => {
+      document.querySelector(item.selector)?.click();
+      later(syncNav, 80);
+    });
+    el.append(button);
+  }
+  document.body.append(el);
+  return el;
+};
+
+const syncNav = () => {
+  const wantNav = lastSize === "phone" && !chatIsOpen() && !keyboardOpen();
+  if (lastSize === "phone" && !nav) nav = buildNav();
+  if (nav) {
+    nav.hidden = !wantNav;
+    for (const button of nav.querySelectorAll("button")) {
+      const item = NAV_ITEMS.find((i) => i.key === button.dataset.mallangNav);
+      const source = item && document.querySelector(item.selector);
+      if (source?.getAttribute("aria-pressed") === "true") button.setAttribute("aria-current", "true");
+      else button.removeAttribute("aria-current");
+    }
+  }
+  if (wantNav) root.setAttribute("data-mallang-nav", "on");
+  else root.removeAttribute("data-mallang-nav");
+  if (lastSize !== "phone" && nav) {
+    nav.remove();
+    nav = null;
+  }
+};
+const scheduleSync = () => {
+  if (debounce) cancel(debounce);
+  debounce = later(() => {
+    debounce = null;
+    attachObserver();
+    syncNav();
+  }, 100);
+};
+const attachObserver = () => {
+  const target = document.querySelector('[data-component="CenterContent"]');
+  if (!target || target === observed) return;
+  observer?.disconnect();
+  observed = target;
+  observer = new MutationObserver(scheduleSync);
+  observer.observe(target, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-pressed"] });
+};
+// The keyboard flag lives on <html>; one more tiny observer would be overkill, so the
+// visualViewport / focus events that toggle it re-run the sync.
+listen(window, "resize", scheduleSync);
+listen(document, "focusin", scheduleSync);
+listen(document, "focusout", scheduleSync);
+// CenterContent mounts after the first render: poll cheaply (managed timer) until it exists.
+let attachTries = 0;
+const attachTimer = marinara?.setInterval
+  ? marinara.setInterval(() => {
+      attachObserver();
+      if (observed || ++attachTries > 40) marinara.clearInterval(attachTimer);
+    }, 250)
+  : null;
+
+syncViewport();
+attachObserver();
+syncNav();
+
+// ---- conflict check ----
+let toast = null;
+if (document.getElementById("m98-root")) {
+  marinara?.log?.warn?.("Mallang: MARINARA98 is active (#m98-root). Running both can break the layout.");
+  toast = document.createElement("div");
+  toast.className = "mallang-toast";
+  toast.setAttribute("role", "status");
+  const text = document.createElement("span");
+  text.textContent = "MARINARA98과 함께 켜면 화면이 깨질 수 있어요";
+  const close = document.createElement("button");
+  close.type = "button";
+  close.setAttribute("aria-label", "닫기");
+  close.textContent = "×";
+  close.addEventListener("click", () => {
+    toast?.remove();
+    toast = null;
+  });
+  toast.append(text, close);
+  document.body.append(toast);
+}
+
+marinara?.log?.info?.("Mallang 0.1.0 started");
+
+// ---- cleanup ----
+marinara.onCleanup(() => {
+  if (debounce) cancel(debounce);
+  if (saveTimer) cancel(saveTimer);
+  if (attachTimer && marinara.clearInterval) marinara.clearInterval(attachTimer);
+  observer?.disconnect();
+  observer = null;
+  for (const fn of cleanups.splice(0).reverse()) safe(fn, "cleanup");
+  nav?.remove();
+  nav = null;
+  toast?.remove();
+  toast = null;
+  for (const name of ["data-mallang", "data-mallang-size", "data-mallang-short", "data-mallang-nav", "data-mallang-motion"]) {
+    root.removeAttribute(name);
+  }
+});
