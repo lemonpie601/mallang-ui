@@ -1,0 +1,497 @@
+<title>말랑 UI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
+<style>
+:root{--milk:#FAF7F1;--paper:#FFFFFF;--ink:#3A3450;--ink-soft:#6E6884;--line:#E7E1D6;--accent:#F2B544;--on-accent:#3A3450;--sage:#CFE3D4;--peach:#F7CBBE;--lav:#DCD3F0;--butter:#F6E5A8;--mist:#DDE3EA;--ol:#3A3450;--blush:#F4A9A8;--focus:#5B4BC4;--page:#F3EEE4;--rail:#EDE6D8;--scrim:rgba(58,52,80,.18);
+--f-d:"Jua","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--f-b:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;--f-n:"Fredoka","Jua",system-ui,sans-serif;--spring:cubic-bezier(.34,1.56,.64,1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--milk:#211B2F;--paper:#2E2742;--ink:#F0EAF7;--ink-soft:#B3A9C8;--line:#3C3455;--accent:#E3AA45;--on-accent:#2B2010;--sage:#3E5848;--peach:#6B4A4A;--lav:#4C4468;--butter:#6A5E38;--mist:#3F4858;--ol:#0F0A18;--blush:#C9787C;--focus:#C9B8FF;--page:#181322;--rail:#2A2339;--scrim:rgba(0,0,0,.35);color-scheme:dark}}
+:root[data-theme="dark"]{--milk:#211B2F;--paper:#2E2742;--ink:#F0EAF7;--ink-soft:#B3A9C8;--line:#3C3455;--accent:#E3AA45;--on-accent:#2B2010;--sage:#3E5848;--peach:#6B4A4A;--lav:#4C4468;--butter:#6A5E38;--mist:#3F4858;--ol:#0F0A18;--blush:#C9787C;--focus:#C9B8FF;--page:#181322;--rail:#2A2339;--scrim:rgba(0,0,0,.35);color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.6 var(--f-b);padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;text-align:inherit}
+input{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:2.5px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1296px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.num,.tn{font-variant-numeric:tabular-nums}
+/* squish */
+.sq{border:1.5px solid var(--ol);box-shadow:0 3px 0 var(--ol);transition:transform .5s var(--spring),box-shadow .2s,background .2s,width .35s var(--spring);cursor:pointer}
+.sq:hover{transform:translateY(-1px)}
+.sq:active{transform:translateY(2px) scale(1.03,.95);box-shadow:0 1px 0 var(--ol);transition-duration:.08s}
+html[data-squish="off"] *,html[data-squish="off"] *::before{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion:reduce){*,*::before{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+.pill{border-radius:999px;padding:6px 16px;font-family:var(--f-d);background:var(--paper);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.pill.acc{background:var(--accent);color:var(--on-accent)}
+.card{background:var(--paper);border:1.5px solid var(--ol);border-radius:18px;box-shadow:0 3px 0 var(--ol);padding:var(--p,14px)}
+.chip{display:inline-flex;align-items:center;border:1.5px solid var(--ol);border-radius:999px;padding:0 9px;font-size:.78em;line-height:1.55;background:var(--c,var(--paper));font-family:var(--f-d);white-space:nowrap}
+.av{width:var(--s,32px);height:var(--s,32px);border-radius:50%;background:var(--c,var(--sage));border:1.5px solid var(--ol);display:grid;place-items:center;font-family:var(--f-d);font-size:calc(var(--s,32px)*.46);flex:none;line-height:1}
+.mascot{display:block;flex:none}
+.wob{animation:wob 4s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes wob{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg) translateY(-1.5px)}}
+.ico{flex:none}
+/* concept */
+.hero{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.hero-l{display:flex;align-items:center;gap:16px}
+.eyebrow{font-size:.82em;color:var(--ink-soft)}
+.hero h1{font:400 clamp(40px,8vw,64px)/1 var(--f-d)}
+.thesis{font:400 clamp(16px,2.6vw,20px)/1.5 var(--f-d);margin-top:6px}
+h2.sec{font:400 22px/1.3 var(--f-d)}
+.sub{color:var(--ink-soft);font-size:.9em}
+.prs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.pr{display:flex;flex-direction:column;gap:10px;padding:16px}
+.pr h3{font:400 18px/1.3 var(--f-d)}
+.pr p{font-size:.92em;color:var(--ink-soft)}
+.pr .demo{margin-top:auto;padding-top:6px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:62px}
+.sw5{display:flex;flex-wrap:wrap;gap:8px}
+.sw5 button{background:var(--c);border-radius:999px;padding:3px 12px;font-family:var(--f-d);font-size:.9em}
+.stat{background:var(--c);border:1.5px solid var(--ol);border-radius:16px;box-shadow:0 3px 0 var(--ol);padding:var(--p,12px);text-align:center;display:flex;flex-direction:column;align-items:center;gap:0;flex:1}
+.stat b{font:600 var(--dig,40px)/1.05 var(--f-n);font-variant-numeric:tabular-nums}
+.stat span{font-size:.72em;color:var(--ink);opacity:.85;font-family:var(--f-d)}
+/* toolbar */
+.tb{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px}
+.tbl{font:400 .85em var(--f-d);color:var(--ink-soft);margin-right:6px}
+.seg{display:inline-flex;gap:2px;border:1.5px solid var(--ol);border-radius:999px;background:var(--paper);padding:3px;box-shadow:0 2px 0 var(--ol);max-width:100%;flex-wrap:wrap}
+.seg button{padding:3px 13px;border-radius:999px;font-family:var(--f-d);font-size:.92em;transition:transform .45s var(--spring),background .2s;white-space:nowrap}
+.seg button:hover{transform:translateY(-1px)}
+.seg button:active{transform:scale(1.04,.92)}
+.seg button.on{background:var(--accent);color:var(--on-accent);box-shadow:inset 0 0 0 1.5px var(--ol)}
+.tbg{display:flex;align-items:center}
+.lapnote{display:none;text-align:center;padding:18px}
+.lapwrap,.phouter{position:relative}
+.lapwrap{overflow:hidden;width:100%}
+@media (max-width:719px){.lap{display:none}.lapnote{display:flex;flex-direction:column;align-items:center;gap:8px}}
+/* frame */
+.frame{position:absolute;left:0;top:0;width:1280px;height:620px;transform-origin:0 0;display:flex;background:var(--milk);border:1.5px solid var(--ol);border-radius:22px;overflow:hidden;font-size:var(--fs,14px);line-height:1.55;--p:14px;--g:12px;--dig:40px;--sec:var(--accent)}
+.frame[data-density="compact"]{--p:9px;--g:8px;--dig:28px}
+.rail{width:64px;flex:none;background:var(--rail);padding:12px 0;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.frame[data-density="compact"] .rail{gap:6px;padding:8px 0}
+.tab{position:relative;width:46px;height:84px;writing-mode:vertical-rl;font-family:var(--f-d);font-size:1.05em;background:var(--c);border-radius:0 16px 16px 0;border-left:0;display:grid;place-items:center;color:var(--ink);box-shadow:2px 3px 0 var(--ol)}
+.frame[data-density="compact"] .tab{height:78px}
+.tab:hover{width:54px}
+.tab.on{width:64px;margin-right:-2px;z-index:2;box-shadow:0 3px 0 var(--ol);border-right-color:var(--c)}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;border-left:6px solid var(--sec);margin-left:-2px;background:var(--milk);position:relative}
+.top{height:40px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1.5px solid var(--line)}
+.word{font:400 1.35em/1 var(--f-d)}
+.srch{display:flex;align-items:center;gap:6px;border:1.5px solid var(--ol);border-radius:999px;background:var(--paper);padding:0 12px;height:28px;flex:0 1 300px;margin-left:10px}
+.srch input{border:0;background:none;outline:0;width:100%;font-size:.9em}
+.srch:focus-within{outline:2.5px solid var(--focus);outline-offset:2px}
+.date{margin-left:auto;font-size:.85em;color:var(--ink-soft)}
+.bd{flex:1;display:flex;min-height:0}
+.sb{width:232px;flex:none;border-right:1.5px solid var(--line);padding:var(--p);display:flex;flex-direction:column;gap:8px;min-height:0}
+.frame[data-scr="char"] .sb,.frame[data-scr="persona"] .sb,.frame[data-scr="lore"] .sb,.frame[data-scr="set"] .sb{display:none}
+.sbh{display:flex;align-items:center;justify-content:space-between;font:400 1.15em var(--f-d)}
+.modes{display:flex;gap:5px}
+.modes button{border-radius:999px;padding:0 10px;font-family:var(--f-d);font-size:.85em;background:var(--paper);box-shadow:0 2px 0 var(--ol)}
+.modes button.on{background:var(--sage)}
+.sl{flex:1;overflow:auto;min-height:0;display:flex;flex-direction:column;gap:5px;padding:2px 3px 4px}
+.fold{display:flex;align-items:center;gap:6px;font:400 .88em var(--f-d);color:var(--ink-soft);padding:2px 4px}
+.fold svg{transition:transform .3s var(--spring)}
+.fold[aria-expanded="true"] svg{transform:rotate(90deg)}
+.cr{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:14px;border:1.5px solid transparent;width:100%;transition:transform .4s var(--spring),background .2s}
+.cr:hover{background:var(--paper);transform:translateY(-1px)}
+.cr:active{transform:translateY(1px) scale(1.02,.96)}
+.cr.on{background:var(--sage);border-color:var(--ol);box-shadow:0 2px 0 var(--ol)}
+.cr .tx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.cr b{font:400 1em var(--f-d)}
+.cr small{font-size:.8em;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr .tm{font-size:.72em;color:var(--ink-soft);align-self:flex-start;padding-top:3px;font-variant-numeric:tabular-nums}
+.newc{justify-content:center;padding:8px 16px;font-size:1.05em;background:var(--accent);color:var(--on-accent);width:100%}
+.mn{flex:1;min-width:0;min-height:0;display:flex;position:relative}
+.scr{display:none;flex:1;min-width:0;min-height:0;flex-direction:column;position:relative;overflow:hidden}
+.scr.on{display:flex}
+.home{padding:var(--p) calc(var(--p) + 6px);overflow:auto;display:flex;flex-direction:column;gap:var(--g);flex:1}
+.greet{display:flex;align-items:center;gap:10px}
+.greet h2{font:400 1.7em/1.2 var(--f-d)}
+.hgrid{display:grid;grid-template-columns:1.15fr 1fr;gap:var(--g)}
+.rcol{display:flex;flex-direction:column;gap:var(--g)}
+.ct{font:400 1.12em/1.3 var(--f-d);display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.ct small{font:400 .78em var(--f-b);color:var(--ink-soft)}
+.rr{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:4px 0}
+.rr+.rr{border-top:1.5px dashed var(--line)}
+.rr .tx{min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.rr b{font:400 1em var(--f-d)}
+.rr small{font-size:.8em;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trk{display:flex;gap:4px}
+.tc{display:grid;justify-items:center;gap:1px}
+.tc b{width:13px;height:13px;border-radius:5px;border:1.5px solid var(--ol);background:var(--paper)}
+.tc.f b{background:var(--c)}
+.tc.fu b{border-style:dashed;border-color:var(--ink-soft);opacity:.55}
+.tc.td b{box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ol)}
+.tc i{font-style:normal;font-size:.58em;color:var(--ink-soft);line-height:1.2}
+.stats{display:flex;gap:var(--g)}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.wd{display:flex;flex-direction:column;align-items:center;gap:1px}
+.wd small{font-size:.72em;color:var(--ink-soft)}
+.dn{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:600 .92em var(--f-n);border:2px solid transparent}
+.wd.td .dn{border-color:var(--ol);background:var(--butter);box-shadow:0 2px 0 var(--ol)}
+.wd u{width:6px;height:6px;border-radius:50%;background:transparent}
+.wd u.dt{background:var(--accent);box-shadow:0 0 0 1.5px var(--ol)}
+.hcs{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--g)}
+.hc{background:var(--c);border-radius:16px;padding:8px 10px;display:flex;align-items:center;gap:8px;min-width:0}
+.hc .tx{display:flex;flex-direction:column;min-width:0;align-items:flex-start;line-height:1.3}
+.hc b{font:400 1em var(--f-d)}
+.hc .chip{margin-top:2px;background:var(--paper)}
+/* chat */
+.ch{height:50px;flex:none;display:flex;align-items:center;gap:10px;padding:0 16px;background:var(--sage);border-bottom:1.5px solid var(--ol);border-radius:0 0 18px 18px;position:relative;z-index:1}
+.ch b{font:400 1.2em var(--f-d)}
+.ch .sp{flex:1}
+.rb{width:32px;height:32px;border-radius:50%;background:var(--paper);display:grid;place-items:center}
+.msgs{flex:1;overflow:auto;padding:14px max(14px,calc((100% - 720px)/2));display:flex;flex-direction:column;gap:12px;min-height:0}
+.m{display:flex;gap:8px;max-width:88%;align-items:flex-end;animation:pop .5s var(--spring)}
+@keyframes pop{from{transform:scale(.9) translateY(6px);opacity:0}}
+.m .bb{padding:9px 14px;border:1.5px solid var(--ol);border-radius:18px 18px 18px 6px;background:var(--paper);box-shadow:0 3px 0 var(--ol);font-size:.96em;line-height:1.6}
+.m.me{align-self:flex-end;flex-direction:row-reverse}
+.m.me .bb{background:var(--sage);box-shadow:none;border-radius:18px 18px 6px 18px}
+.dots{display:flex;gap:4px;padding:4px 2px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--ink-soft);animation:bob 1s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes bob{0%,60%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-6px) scale(1.1,.9)}}
+.comp{height:52px;flex:none;display:flex;align-items:center;gap:8px;padding:0 max(14px,calc((100% - 720px)/2));margin-bottom:4px}
+.comp .rb{width:36px;height:36px}
+.cin{flex:1;min-width:0;height:38px;border:1.5px solid var(--ol);border-radius:999px;background:var(--paper);padding:0 16px;outline:0}
+.cin:focus-visible{outline:2.5px solid var(--focus);outline-offset:2px}
+.cin::placeholder{color:var(--ink-soft)}
+/* grid screens */
+.band{flex:none;background:var(--c);border-bottom:1.5px solid var(--ol);border-radius:0 0 22px 22px;padding:calc(var(--p) + 2px) 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.band h2{font:400 1.7em/1.2 var(--f-d);margin-right:6px}
+.band .sp{flex:1}
+.band .chip{background:var(--paper);box-shadow:0 2px 0 var(--ol);padding:0 12px}
+.band .chip.on{background:var(--accent)}
+.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--g);padding:var(--g) 18px;overflow:auto;flex:1;min-height:0;align-content:start}
+.cc{background:var(--paper);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;align-items:stretch;min-width:0}
+.cc .tp{background:var(--c);height:calc(46px + var(--p));display:flex;align-items:flex-end;justify-content:center;border-bottom:1.5px solid var(--ol)}
+.cc .tp .av{transform:translateY(40%);--s:50px}
+.cc .bdy{padding:calc(var(--p) + 22px) var(--p) var(--p);display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center}
+.cc b{font:400 1.12em var(--f-d)}
+.cc p{font-size:.82em;color:var(--ink-soft);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cc .tags{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.cc .tn{font-size:.75em;color:var(--ink-soft)}
+.sheet{position:absolute;top:0;right:0;bottom:0;width:360px;max-width:100%;background:var(--paper);border-left:1.5px solid var(--ol);z-index:6;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:12px;transform:translateX(104%);visibility:hidden;transition:transform .5s var(--spring),visibility 0s .5s;box-shadow:-4px 0 0 var(--scrim)}
+.sheet.open{transform:none;visibility:visible;transition:transform .5s var(--spring),visibility 0s}
+.sheet .hd{display:flex;align-items:center;gap:12px}
+.sheet h3{font:400 1.5em/1.2 var(--f-d)}
+.sheet .x{margin-left:auto;width:32px;height:32px;border-radius:50%;background:var(--paper);display:grid;place-items:center;flex:none}
+.sheet .st{display:flex;gap:8px}
+.sheet .tags{display:flex;gap:5px;flex-wrap:wrap}
+.sheet .go{justify-content:center;background:var(--accent);color:var(--on-accent);padding:9px;margin-top:auto;font-size:1.05em}
+.sheet .st .stat{--dig:30px}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--g);padding:var(--g) 18px;overflow:auto;flex:1;align-content:start}
+.sgrid .card{display:flex;flex-direction:column;gap:8px}
+.sgrid h3{font:400 1.15em var(--f-d)}
+.sgrid p{font-size:.85em;color:var(--ink-soft)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sw{width:48px;height:28px;border-radius:999px;background:var(--line);position:relative;flex:none}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:var(--paper);border:1.5px solid var(--ol);transition:transform .45s var(--spring)}
+.sw[aria-checked="true"]{background:var(--accent)}
+.sw[aria-checked="true"]::after{transform:translateX(20px)}
+.sw:active::after{width:22px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;margin:0;font-size:.9em}
+.kv dt{color:var(--ink-soft)}.kv dd{margin:0;text-align:right}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;pointer-events:none;background:var(--ink);color:var(--milk);padding:8px 18px;border-radius:999px;font-family:var(--f-d);transition:transform .5s var(--spring),opacity .25s;z-index:50;max-width:90vw}
+.toast.on{transform:translate(-50%,0);opacity:1}
+/* phone */
+.phouter{display:flex;flex-direction:column;align-items:center;gap:10px}
+.phwrap{position:relative;width:calc(390px*var(--ps,1));height:calc(780px*var(--ps,1))}
+.phone{position:absolute;left:0;top:0;width:390px;height:780px;transform-origin:0 0;transform:scale(var(--ps,1));border:3px solid var(--ol);border-radius:40px;background:var(--milk);overflow:hidden;box-shadow:0 5px 0 var(--ol);--p:13px;--g:10px;--dig:32px;font-size:14px;line-height:1.55}
+.pst{height:34px;display:flex;align-items:center;justify-content:space-between;padding:6px 26px 0;font:600 .85em var(--f-n)}
+.pst i{width:84px;height:20px;border-radius:999px;background:var(--ol);opacity:.9}
+.ps{position:absolute;left:0;right:0;top:34px;bottom:0;display:none;flex-direction:column}
+.ps.on{display:flex}
+.pbody{flex:1;overflow:auto;padding:6px 16px 100px;display:flex;flex-direction:column;gap:var(--g);min-height:0}
+.ptitle{display:flex;align-items:center;gap:10px;padding:6px 16px 4px}
+.ptitle h2{font:400 1.7em/1.2 var(--f-d)}
+.phone .hgrid{grid-template-columns:1fr}
+.phone .rr{grid-template-columns:auto 1fr}
+.phone .rr .trk{grid-column:1/-1;justify-content:space-between;padding-left:42px}
+.phone .stat{padding:8px}
+.pnav{position:absolute;left:18px;right:18px;bottom:18px;height:60px;border-radius:999px;background:var(--accent);display:flex;justify-content:space-around;align-items:center;padding:0 8px;z-index:5}
+.pnav button{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--on-accent);position:relative;transition:transform .45s var(--spring),background .2s}
+.pnav button:active{transform:scale(1.08,.9)}
+.pnav button.on{background:var(--ink);color:var(--milk);box-shadow:0 2px 0 var(--ol)}
+.phone .ch{height:46px;margin:0}
+.phone .msgs{padding:12px 14px}
+.phone .comp{padding:0 14px;margin-bottom:88px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:40px 16px;text-align:center;color:var(--ink-soft)}
+.pl{display:flex;flex-direction:column;gap:var(--g)}
+.pl .hc{width:100%}
+/* flow */
+.flows{display:flex;flex-direction:column;gap:14px}
+.fl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 4px}
+.fl .lb{flex:0 0 100%;font:400 .9em var(--f-d);color:var(--ink-soft)}
+.node{background:var(--c);border:1.5px solid var(--ol);border-radius:18px;box-shadow:0 3px 0 var(--ol);padding:6px 14px;font-family:var(--f-d);display:flex;gap:6px;align-items:center}
+.node em{font:600 .75em var(--f-n);font-style:normal;background:var(--paper);border:1.5px solid var(--ol);border-radius:50%;width:20px;height:20px;display:grid;place-items:center}
+.fl svg.ar{color:var(--ink-soft);flex:none}
+@media (max-width:520px){.hero-l{gap:10px}.hero-l svg.mascot{width:64px;height:48px}}
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <div class="hero-l"><i data-m="96"></i>
+    <div><p class="eyebrow">Marinara Engine 리스킨 컨셉 · 몽글이와 함께</p><h1>말랑</h1>
+    <p class="thesis">눌리면 살짝 찌그러지고, 놓으면 통통 돌아오는 대화앱.</p></div></div>
+  <div class="tbg"><span class="tbl">테마</span><div class="seg" data-k="theme" role="group" aria-label="테마 선택"><button data-v="system">시스템</button><button data-v="light">라이트</button><button data-v="dark">다크</button></div></div>
+</header>
+
+<section aria-labelledby="h-pr">
+  <h2 class="sec" id="h-pr" style="margin-bottom:12px">말랑의 세 가지 원칙</h2>
+  <div class="prs">
+    <article class="card pr"><h3>1. 통통 외곽선</h3>
+      <p>1.5px 잉크 외곽선과 3px 아래 그림자. 누르면 2px 내려가며 살짝 찌그러졌다가 통통 튀며 돌아와요.</p>
+      <div class="demo"><button class="sq pill acc" style="padding:9px 24px;font-size:1.05em">눌러보세요</button><span class="sub">hover 시 1px 떠오름</span></div></article>
+    <article class="card pr"><h3>2. 섹션마다 색</h3>
+      <p>대화는 세이지, 캐릭터는 살구처럼 영역마다 파스텔 하나를 가져요. 길을 잃어도 색으로 알 수 있어요.</p>
+      <div class="demo sw5">
+        <button class="sq" style="--c:var(--sage)">대화 · 세이지</button><button class="sq" style="--c:var(--peach)">캐릭터 · 살구</button><button class="sq" style="--c:var(--lav)">페르소나 · 라벤더</button><button class="sq" style="--c:var(--butter)">로어북 · 버터</button><button class="sq" style="--c:var(--mist)">설정 · 안개</button></div></article>
+    <article class="card pr"><h3>3. 큰 숫자, 작은 라벨</h3>
+      <p>한눈에 보여야 하는 건 숫자예요. 통통한 숫자는 크게, 설명은 작게 곁들여요.</p>
+      <div class="demo"><div class="stat" style="--c:var(--sage);--p:10px"><b>128</b><span>메시지</span></div><div class="stat" style="--c:var(--butter);--p:10px"><b>7</b><span>연속 접속일</span></div></div></article>
+  </div>
+</section>
+
+<section class="lap" id="lap" aria-labelledby="h-lap">
+  <h2 class="sec" id="h-lap" style="margin-bottom:10px">시안 1 · 노트북 1280×620</h2>
+  <div class="tb">
+    <div class="tbg"><span class="tbl">화면</span><div class="seg" data-k="scr" role="group" aria-label="화면"><button data-v="home">홈</button><button data-v="chat">채팅</button><button data-v="char">캐릭터</button><button data-v="set">설정</button></div></div>
+    <div class="tbg"><span class="tbl">밀도</span><div class="seg" data-k="density" role="group" aria-label="밀도"><button data-v="comfy">편안</button><button data-v="compact">촘촘</button></div></div>
+    <div class="tbg"><span class="tbl">테마</span><div class="seg" data-k="theme" role="group" aria-label="테마"><button data-v="system">시스템</button><button data-v="light">라이트</button><button data-v="dark">다크</button></div></div>
+  </div>
+  <div class="lapwrap" id="lapwrap">
+  <div class="frame" id="frame" data-scr="home" data-density="comfy">
+    <nav class="rail" id="rail" aria-label="섹션 탭"></nav>
+    <div class="col">
+      <div class="top"><i data-m="30"></i><span class="word">말랑</span>
+        <label class="srch"><i data-i="search" data-s="15"></i><input type="text" placeholder="대화, 캐릭터 검색" aria-label="검색"></label>
+        <span class="date">11월 4일 수요일</span></div>
+      <div class="bd">
+        <aside class="sb" id="sb">
+          <div class="sbh"><span>대화 <span class="tn" id="cnt">12</span></span><i data-i="chev" data-s="16"></i></div>
+          <div class="modes" id="modes"></div>
+          <div class="sl" id="sl"></div>
+          <button class="sq pill newc" id="newc"><i data-i="plus" data-s="16"></i>새 대화</button>
+        </aside>
+        <main class="mn">
+          <section class="scr on" id="s-home"></section>
+          <section class="scr" id="s-chat">
+            <div class="ch"><span class="av cav" style="--c:var(--peach);--s:34px">리</span><b class="cname">리나</b><span class="chip cmode" style="--c:var(--paper)">RP</span><span class="sp"></span><button class="sq rb" aria-label="검색"><i data-i="search" data-s="16"></i></button><button class="sq rb" aria-label="더보기"><i data-i="more" data-s="16"></i></button></div>
+            <div class="msgs" aria-live="polite"></div>
+            <form class="comp"><button type="button" class="sq rb" aria-label="첨부" data-toast="첨부는 아직 준비 중이에요"><i data-i="plus" data-s="18"></i></button><input class="cin" type="text" placeholder="메시지를 입력하세요…" aria-label="메시지 입력" autocomplete="off"><button class="sq pill acc csend" type="submit"><i data-i="send" data-s="16"></i>보내기</button></form>
+          </section>
+          <section class="scr" id="s-grid">
+            <div class="band" id="gband"></div>
+            <div class="cg" id="cg"></div>
+            <aside class="sheet" id="sheet" aria-hidden="true" aria-label="상세"></aside>
+          </section>
+          <section class="scr" id="s-set">
+            <div class="band" style="--c:var(--mist)"><h2>설정</h2><span class="sub">내 취향대로 말랑하게</span></div>
+            <div class="sgrid">
+              <div class="card"><h3>테마</h3><p>색 버전을 골라요.</p><div class="seg" data-k="theme" role="radiogroup" aria-label="색 버전"><button data-v="light">말랑 기본</button><button data-v="dark">밤 젤리</button></div></div>
+              <div class="card"><h3>밀도</h3><p>자동은 작은 화면에서 촘촘하게 보여줘요.</p><div class="seg" data-k="density" data-exact="1" role="radiogroup" aria-label="밀도"><button data-v="auto">자동</button><button data-v="comfy">편안</button><button data-v="compact">촘촘</button></div></div>
+              <div class="card"><h3>글자 크기 <span class="tn" id="fsv">14px</span></h3><p>13 ~ 17px 사이에서 조절해요.</p><input type="range" id="fs" min="13" max="17" step="1" value="14" aria-label="글자 크기"></div>
+              <div class="card"><h3>움직임</h3><div class="row"><p>말랑 효과 (찌그러짐, 통통 튐)</p><button class="sq sw" id="sqsw" role="switch" aria-checked="true" aria-label="말랑 효과"></button></div></div>
+              <div class="card" style="grid-column:1/-1"><h3>정보</h3><dl class="kv"><dt>말랑 버전</dt><dd>0.1.0</dd><dt>대상</dt><dd>Marinara 2.5.1</dd><dt>글꼴</dt><dd>Jua · Gowun Dodum · Fredoka</dd></dl></div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+<div class="lapnote card" id="lapnote"><i data-m="64"></i><p>넓은 화면에서 노트북 시안을 볼 수 있어요.</p><p class="sub">아래 폰 시안을 먼저 눌러보세요.</p></div>
+
+<section aria-labelledby="h-ph">
+  <h2 class="sec" id="h-ph" style="margin-bottom:12px">시안 2 · 폰 390×780</h2>
+  <div class="phouter" id="phouter"><div class="phwrap" id="phwrap"><div class="phone" id="phone">
+    <div class="pst"><span class="num">9:41</span><i></i><span class="num">87%</span></div>
+    <section class="ps on" data-p="home"><div class="ptitle"><i data-m="40"></i><h2>말랑</h2></div><div class="pbody" id="p-home"></div></section>
+    <section class="ps" data-p="chat">
+      <div class="ch"><span class="av cav" style="--c:var(--peach);--s:32px">리</span><b class="cname">리나</b><span class="chip cmode" style="--c:var(--paper)">RP</span></div>
+      <div class="msgs" aria-live="polite"></div>
+      <form class="comp"><input class="cin" type="text" placeholder="메시지를 입력하세요…" aria-label="메시지 입력" autocomplete="off"><button class="sq pill acc csend" type="submit" aria-label="보내기"><i data-i="send" data-s="16"></i></button></form>
+    </section>
+    <section class="ps" data-p="char"><div class="ptitle"><h2>캐릭터</h2></div><div class="pbody pl" id="p-char"></div></section>
+    <section class="ps" data-p="log"><div class="ptitle"><h2>기록</h2></div><div class="pbody"><div class="empty"><i data-m="88"></i><b style="font-family:var(--f-d);font-size:1.2em;color:var(--ink)">아직 기록이 없어요</b><span>대화를 나누면 몽글이가 차곡차곡 모아둘게요.</span></div></div></section>
+    <section class="ps" data-p="me"><div class="ptitle"><h2>나</h2></div><div class="pbody">
+      <div class="card"><div class="row"><b style="font-family:var(--f-d)">하루님</b><span class="chip" style="--c:var(--lav)">기본 페르소나</span></div></div>
+      <div class="card" style="display:flex;flex-direction:column;gap:8px"><b style="font-family:var(--f-d)">테마</b><div class="seg" data-k="theme" role="group" aria-label="테마"><button data-v="system">시스템</button><button data-v="light">라이트</button><button data-v="dark">다크</button></div></div>
+      <div class="card"><div class="row"><span>말랑 효과</span><button class="sq sw" data-sw role="switch" aria-checked="true" aria-label="말랑 효과"></button></div></div>
+    </div></section>
+    <nav class="pnav sq" id="pnav" aria-label="하단 내비게이션"></nav>
+  </div></div></div>
+</section>
+
+<section aria-labelledby="h-fl">
+  <h2 class="sec" id="h-fl" style="margin-bottom:12px">UX 흐름</h2>
+  <div class="card flows" id="flows"></div>
+</section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const P={home:'M3 11l9-8 9 8M5 10v10h14V10M10 20v-6h4v6',chat:'M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.6A8 8 0 1 1 21 12z',user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c0-4 3.5-6 8-6s8 2 8 6',heart:'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z',clock:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',gear:'M4 7h10M18 7h2M4 17h2M10 17h10M14 5v4M6 15v4',send:'M4 12l16-8-6 16-3-7z',plus:'M12 5v14M5 12h14',search:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5',chev:'M9 6l6 6-6 6',x:'M6 6l12 12M18 6L6 18',more:'M5 12h.01M12 12h.01M19 12h.01',arrow:'M5 12h14M13 6l6 6-6 6'};
+const ic=(n,s=18)=>`<svg class="ico" viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${P[n]}"/></svg>`;
+const mascot=(s=40)=>`<svg class="mascot wob" viewBox="0 0 64 48" width="${s}" height="${Math.round(s*.75)}" aria-hidden="true"><path d="M16 42A11 11 0 0 1 14 20A14 14 0 0 1 40 14A12 12 0 0 1 50 36A6 6 0 0 1 46 42Z" fill="var(--paper)" stroke="var(--ol)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="26" cy="28" r="1.9" fill="var(--ol)"/><circle cx="38" cy="28" r="1.9" fill="var(--ol)"/><ellipse cx="20.5" cy="32.5" rx="3.2" ry="2" fill="var(--blush)" opacity=".75"/><ellipse cx="43.5" cy="32.5" rx="3.2" ry="2" fill="var(--blush)" opacity=".75"/><path d="M29.5 31.5q2.5 2.2 5 0" fill="none" stroke="var(--ol)" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+const hydrate=r=>{$$('[data-i]',r).forEach(e=>e.outerHTML=ic(e.dataset.i,e.dataset.s||18));$$('[data-m]',r).forEach(e=>e.outerHTML=mascot(+e.dataset.m))};
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const col=c=>`var(--${c})`;
+
+const CHATS=[
+{n:'리나',i:'리',c:'peach',m:'rp',p:'창가 자리에 앉아 젖은 소매를 털었다',t:'14:32',f:1,a:[1,1,1,0,0,0,0]},
+{n:'도윤',i:'도',c:'sage',m:'chat',p:'오늘 야식 뭐 먹을지 정했어?',t:'13:05',f:1,a:[1,0,1,0,0,0,0]},
+{n:'세라핌',i:'세',c:'butter',m:'game',p:'던전 3층의 열쇠를 찾았다',t:'어제',f:1,a:[0,1,1,0,0,0,0]},
+{n:'미루',i:'미',c:'lav',m:'chat',p:'고마워, 내일 또 얘기하자',t:'월',f:0,a:[1,0,0,0,0,0,0]},
+{n:'카이',i:'카',c:'mist',m:'rp',p:'달빛 아래 두 사람은 말이 없었다',t:'월',f:0,a:[1,1,0,0,0,0,0]},
+{n:'노을',i:'노',c:'peach',m:'game',p:'상점에서 포션 2개를 샀다',t:'일',f:0,a:[0,0,0,0,0,0,0]}];
+const MODE={chat:'대화',rp:'RP',game:'게임'};
+const CYC=['peach','sage','lav','butter','mist'];
+const D={
+char:{t:'캐릭터',c:'peach',add:'새 캐릭터',u:'대화',items:[
+['리나','비 오는 날이면 문을 여는 골목 카페의 주인. 따뜻한 라떼와 느긋한 말투.',['카페','다정'],24,1],
+['도윤','야식과 농담을 좋아하는 대학 선배. 늘 한발 먼저 연락해요.',['일상','장난'],18,1],
+['세라핌','던전 입구를 지키는 길잡이. 말수는 적지만 지도는 정확해요.',['판타지','게임'],9,1],
+['미루','구름 사이를 떠다니는 고양이 요정. 졸릴 때마다 말끝이 늘어져요.',['요정','포근'],31,0],
+['카이','달빛 아래 맹세를 지키는 기사. 진지하지만 은근히 서툴러요.',['기사','로맨스'],12,0],
+['노을','마을 끝 작은 상점의 주인. 흥정은 부드럽고 포션은 듬뿍.',['상점','게임'],6,0],
+['하린','비 오는 날 사건을 맡는 탐정. 단서보다 사람을 먼저 봐요.',['추리','차분'],4,0],
+['모모','구름 마을의 작은 정령. 하루님의 기분을 날씨로 말해줘요.',['정령','귀염'],15,1]]},
+persona:{t:'페르소나',c:'lav',add:'새 페르소나',u:'사용',items:[
+['하루','기본 페르소나. 조용하지만 호기심 많은 단골손님.',['기본'],42,1],
+['모험가 하루','낡은 지도를 들고 던전을 도는 초보 모험가.',['판타지'],8,0],
+['학생 하루','시험 기간에도 카페에 앉아 있는 대학생.',['일상'],11,0],
+['작가 하루','창가에서 이야기를 쓰는 소설가 지망생.',['창작'],5,0]]},
+lore:{t:'로어북',c:'butter',add:'새 로어북',u:'항목',items:[
+['비 오는 카페','골목 카페의 규칙, 메뉴, 단골들의 사연.',['세계관'],12,1],
+['달빛 도시','달이 두 번 뜨는 도시의 지리와 역사.',['세계관'],27,1],
+['던전 규칙','층별 몬스터와 열쇠 획득 조건 정리.',['게임'],16,0],
+['구름 마을','구름 위에 사는 정령들의 풍습.',['세계관'],9,0]]}};
+const REPLY=['리나는 작게 웃으며 컵을 내려놓았다. "그럼 오늘은 천천히 있다 가세요. 비는 아직 한참 올 것 같으니까요."','"음, 그 얘기 더 해줘요. 빗소리랑 같이 들으니까 이상하게 더 포근하네요."','리나가 창밖을 바라보다가 슬쩍 시선을 돌렸다. "사실 오늘 하루님이 올 것 같았어요."'];
+const SEED=[['ai','창밖으로 빗소리가 잔잔하게 들려왔다. 리나는 김이 오르는 머그잔을 두 손으로 감싸 쥐고 미소 지었다. "마침 잘 왔어요. 방금 막 라떼를 내렸거든요."'],
+['me','우산을 털며 문가의 종소리를 울렸다. "비가 갑자기 쏟아져서요. 여기 잠깐 있어도 될까요?"'],
+['ai','"그럼요, 창가 자리가 비어 있어요. 수건도 가져다 드릴게요."'],
+['me','창가 자리에 앉아 젖은 소매를 털었다. "이 카페, 처음 와봤는데 분위기가 참 따뜻하네요."'],
+['ai','리나는 카운터 아래에서 작은 수건과 쿠키 접시를 꺼내 왔다. "오늘의 비 오는 날 서비스예요. 잼 쿠키, 좋아하세요?"']];
+
+const S={scr:'home',density:'comfy',theme:'system',fs:14,squish:true,mode:'all',fold:true,flt:'all'};
+let CUR=CHATS[0];
+const SEC={home:'accent',chat:'sage',char:'peach',persona:'lav',lore:'butter',set:'mist'};
+const TABS=[['home','홈'],['chat','대화'],['char','캐릭터'],['persona','페르소나'],['lore','로어북'],['set','설정']];
+const frame=$('#frame');
+const eff=()=>S.density==='auto'?'compact':S.density;
+let toastT;
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('on'),1800)}
+
+/* shared builders */
+const track=(a,c)=>`<span class="trk" style="--c:${col(c)}" aria-label="최근 7일 활동">${a.map((v,i)=>`<span class="tc${v?' f':''}${i>2?' fu':''}${i==2?' td':''}"><b></b><i>${'월화수목금토일'[i]}</i></span>`).join('')}</span>`;
+const recent=()=>`<div class="card"><div class="ct">이어서 대화하기<small>최근 7일</small></div>${CHATS.slice(0,3).map((c,k)=>`<div class="rr"><button class="sq av" data-chat="${k}" style="--c:${col(c.c)};--s:34px" aria-label="${c.n}와 대화">${c.i}</button><div class="tx"><b>${c.n}</b><small>${c.p}</small></div>${track(c.a,c.c)}</div>`).join('')}</div>`;
+const stats=()=>`<div class="stats">${[['대화',12,'sage'],['캐릭터',5,'peach'],['업적',3,'butter']].map(s=>`<div class="stat" style="--c:${col(s[2])}"><b>${s[1]}</b><span>${s[0]}</span></div>`).join('')}</div>`;
+const week=()=>{const dots=[1,1,0,1,0,0,0];return `<div class="card"><div class="ct">11월<small>이번 주</small></div><div class="wk">${[...'일월화수목금토'].map((d,i)=>`<div class="wd${i==3?' td':''}"><small>${d}</small><span class="dn">${i+1}</span><u class="${dots[i]?'dt':''}"></u></div>`).join('')}</div></div>`};
+
+function renderHome(){
+$('#s-home').innerHTML=`<div class="home"><div class="greet">${mascot(44)}<h2>좋은 오후예요, 하루님</h2></div>
+<div class="hgrid">${recent()}<div class="rcol">${stats()}${week()}</div></div>
+<div><div class="ct">캐릭터<small>5명</small></div><div class="hcs">${D.char.items.slice(0,5).map((c,i)=>`<button class="sq hc" data-open="${i}" style="--c:${col(CYC[i])}"><span class="av" style="--c:var(--paper);--s:34px">${c[0][0]}</span><span class="tx"><b>${c[0]}</b><span class="chip">${c[2][0]}</span></span></button>`).join('')}</div></div></div>`}
+
+function renderRail(){
+$('#rail').innerHTML=TABS.map(t=>`<button class="sq tab" data-go="${t[0]}" style="--c:${col(SEC[t[0]]==='accent'?'accent':SEC[t[0]])}">${t[1]}</button>`).join('')}
+
+function chatRow(c,k){return `<button class="cr${CUR===c?' on':''}" data-chat="${k}"><span class="av" style="--c:${col(c.c)};--s:30px">${c.i}</span><span class="tx"><b>${c.n}</b><small>${c.p}</small></span><span class="tm">${c.t}</span></button>`}
+function renderSide(){
+const m=S.mode,ok=c=>m==='all'||c.m===m;
+const fav=CHATS.map((c,k)=>[c,k]).filter(x=>x[0].f&&ok(x[0])),oth=CHATS.map((c,k)=>[c,k]).filter(x=>!x[0].f&&ok(x[0]));
+$('#modes').innerHTML=[['all','전체'],['chat','대화'],['rp','RP'],['game','게임']].map(x=>`<button class="sq${m===x[0]?' on':''}" data-mode="${x[0]}" aria-pressed="${m===x[0]}">${x[1]}</button>`).join('');
+$('#sl').innerHTML=`<button class="fold" id="fold" aria-expanded="${S.fold}">${ic('chev',14)}★ 즐겨찾기 <span class="tn">${fav.length}</span></button>${S.fold?fav.map(x=>chatRow(...x)).join(''):''}${oth.map(x=>chatRow(...x)).join('')}`;
+$('#cnt').textContent=CHATS.length+(CHATS.length>6?6:6);}
+
+function setHead(){$$('.cav').forEach(e=>{e.textContent=CUR.i;e.style.setProperty('--c',col(CUR.c))});$$('.cname').forEach(e=>e.textContent=CUR.n);$$('.cmode').forEach(e=>e.textContent=MODE[CUR.m])}
+function seed(box){box.innerHTML='';if(CUR.n==='리나'){SEED.forEach(s=>addMsg(box,s[0],s[1],true));const t=typing();box.appendChild(t);setTimeout(()=>t.remove(),3500)}else addMsg(box,'ai','안녕하세요, 하루님. 오늘은 어떤 이야기를 해볼까요?',true);box.scrollTop=box.scrollHeight}
+function addMsg(box,w,t,quiet){const m=el('div','m '+w);if(quiet)m.style.animation='none';if(w==='ai'){const a=el('span','av',CUR.i);a.style.setProperty('--c',col(CUR.c));a.style.setProperty('--s','30px');m.appendChild(a)}m.appendChild(el('div','bb',t));box.appendChild(m);box.scrollTop=box.scrollHeight}
+function typing(){const m=el('div','m ai');const a=el('span','av',CUR.i);a.style.setProperty('--c',col(CUR.c));a.style.setProperty('--s','30px');m.appendChild(a);const b=el('div','bb');b.setAttribute('aria-label','입력 중');b.innerHTML='<div class="dots"><i></i><i></i><i></i></div>';m.appendChild(b);return m}
+let rp=0;
+function wireChat(sec){const box=$('.msgs',sec),f=$('form',sec),inp=$('.cin',sec);
+f.addEventListener('submit',e=>{e.preventDefault();const v=inp.value.trim();if(!v)return;inp.value='';addMsg(box,'me',v);const t=typing();box.appendChild(t);box.scrollTop=box.scrollHeight;setTimeout(()=>{t.remove();addMsg(box,'ai',REPLY[rp++%REPLY.length])},900)})}
+function setChat(k){CUR=CHATS[k];setHead();$$('.msgs').forEach(seed);renderSide()}
+
+/* grid screens */
+let gk='char',gf='all';
+function renderGrid(){
+const d=D[gk];
+$('#gband').style.setProperty('--c',col(d.c));
+const items=d.items.filter(x=>gf==='all'||(gf==='fav'&&x[4]));
+$('#gband').innerHTML=`<h2>${d.t} <span class="tn">${d.items.length}</span></h2>${[['all','전체'],['fav','즐겨찾기']].map(f=>`<button class="sq chip${gf===f[0]?' on':''}" data-flt="${f[0]}" aria-pressed="${gf===f[0]}">${f[1]}</button>`).join('')}<span class="sp"></span><button class="sq pill acc" data-toast="${d.add}는 곧 만들 수 있어요">${ic('plus',15)}${d.add}</button>`;
+$('#cg').innerHTML=items.map(x=>{const i=d.items.indexOf(x),cc=gk==='char'?CYC[i%5]:d.c;return `<button class="sq cc" data-open="${i}"><span class="tp" style="--c:${col(cc)}"><span class="av" style="--c:var(--paper)">${x[0][0]}</span></span><span class="bdy"><b>${x[0]}</b><p>${x[1]}</p><span class="tags">${x[2].map(t=>`<span class="chip" style="--c:${col(cc)}">${t}</span>`).join('')}</span><span class="tn">${d.u} ${x[3]}</span></span></button>`}).join('')}
+let openIdx=-1;
+function openSheet(i){const d=D[gk],x=d.items[i];openIdx=i;const cc=gk==='char'?CYC[i%5]:d.c,sh=$('#sheet');
+sh.innerHTML=`<div class="hd"><span class="av" style="--c:${col(cc)};--s:56px">${x[0][0]}</span><h3>${x[0]}</h3><button class="sq x" id="shx" aria-label="닫기">${ic('x',16)}</button></div><div class="tags">${x[2].map(t=>`<span class="chip" style="--c:${col(cc)}">${t}</span>`).join('')}</div><p>${x[1]}</p><div class="st"><div class="stat" style="--c:${col(cc)}"><b>${x[3]}</b><span>${d.u}</span></div><div class="stat" style="--c:var(--mist)"><b>${x[3]*6}</b><span>메시지</span></div></div><button class="sq pill go" id="shgo">${gk==='char'?'대화 시작':'선택하기'}</button>`;
+sh.classList.add('open');sh.setAttribute('aria-hidden','false');setTimeout(()=>$('#shx').focus({preventScroll:true}),60)}
+function closeSheet(){const sh=$('#sheet');if(!sh.classList.contains('open'))return;sh.classList.remove('open');sh.setAttribute('aria-hidden','true')}
+function startChat(i){const x=D.char.items[i];let k=CHATS.findIndex(c=>c.n===x[0]);if(k<0){CHATS.unshift({n:x[0],i:x[0][0],c:CYC[i%5],m:'rp',p:'새 대화를 시작했어요',t:'지금',f:0,a:[0,0,1,0,0,0,0]});k=0}setChat(k);go('chat')}
+
+/* navigation */
+function go(s){S.scr=s;if(s==='char'||s==='persona'||s==='lore'){gk=s;gf='all';closeSheet();renderGrid()}apply()}
+function apply(){
+const r=document.documentElement;
+S.theme==='system'?r.removeAttribute('data-theme'):r.setAttribute('data-theme',S.theme);
+S.squish?r.removeAttribute('data-squish'):r.setAttribute('data-squish','off');
+frame.dataset.scr=S.scr;frame.dataset.density=eff();frame.style.setProperty('--fs',S.fs+'px');frame.style.setProperty('--sec',col(SEC[S.scr]));
+const sid=S.scr==='home'?'home':S.scr==='chat'?'chat':S.scr==='set'?'set':'grid';
+$$('.scr',frame).forEach(e=>e.classList.toggle('on',e.id==='s-'+sid));
+$$('.tab').forEach(t=>{const on=t.dataset.go===S.scr;t.classList.toggle('on',on);on?t.setAttribute('aria-current','page'):t.removeAttribute('aria-current')});
+const dark=S.theme==='dark'||(S.theme==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
+$$('.seg').forEach(g=>{const k=g.dataset.k;$$('button',g).forEach(b=>{const v=b.dataset.v;let on;
+if(k==='density')on=g.hasAttribute('data-exact')?S.density===v:eff()===v;
+else if(k==='theme'&&g.hasAttribute('role')&&g.getAttribute('role')==='radiogroup')on=(v==='dark')===dark;
+else on=S[k]===v;
+b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})});
+$$('.sw').forEach(b=>b.setAttribute('aria-checked',S.squish));
+$('#fs').value=S.fs;$('#fsv').textContent=S.fs+'px'}
+
+document.addEventListener('click',e=>{
+const t=e.target;let b;
+if(b=t.closest('.seg button')){const k=b.parentElement.dataset.k,v=b.dataset.v;if(k==='scr')go(v);else{S[k]=v;apply()}return}
+if(b=t.closest('[data-go]')){go(b.dataset.go);return}
+if(b=t.closest('[data-chat]')){setChat(+b.dataset.chat);go('chat');return}
+if(b=t.closest('[data-open]')){if(S.scr==='home'){gk='char';go('char')}openSheet(+b.dataset.open);return}
+if(b=t.closest('[data-mode]')){S.mode=b.dataset.mode;renderSide();return}
+if(t.closest('#fold')){S.fold=!S.fold;renderSide();return}
+if(b=t.closest('[data-flt]')){gf=b.dataset.flt;closeSheet();renderGrid();return}
+if(t.closest('#shx')){closeSheet();return}
+if(t.closest('#shgo')){if(gk==='char')startChat(openIdx);else{closeSheet();toast('선택했어요')}return}
+if(t.closest('#newc')){toast('새 대화: 모드와 캐릭터를 골라요');go('char');return}
+if(b=t.closest('[data-toast]')){toast(b.dataset.toast);return}
+if(t.closest('#sqsw')||t.closest('[data-sw]')){S.squish=!S.squish;apply();return}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+$('#fs').addEventListener('input',e=>{S.fs=+e.target.value;apply()});
+
+/* phone */
+const PN=[['home','홈','home'],['chat','대화','chat'],['char','캐릭터','heart'],['log','기록','clock'],['me','나','user']];
+function renderPhone(){
+$('#p-home').innerHTML=`<div class="card" style="display:flex;align-items:center;gap:10px;background:var(--butter)">${mascot(52)}<div><div style="font:400 1.3em/1.3 var(--f-d)">좋은 오후예요, 하루님</div><small style="color:var(--ink-soft)">11월 4일 수요일</small></div></div>${recent()}${stats()}${week()}`;
+$('#p-char').innerHTML=D.char.items.slice(0,5).map((c,i)=>`<button class="sq hc" data-pchar="${i}" style="--c:${col(CYC[i])};padding:10px 14px"><span class="av" style="--c:var(--paper);--s:38px">${c[0][0]}</span><span class="tx"><b>${c[0]}</b><small style="color:var(--ink-soft)">${c[2].join(' · ')}</small></span></button>`).join('');
+$('#pnav').innerHTML=PN.map(n=>`<button data-pn="${n[0]}" aria-label="${n[1]}" title="${n[1]}">${ic(n[2],22)}</button>`).join('')}
+function pgo(p){$$('#phone .ps').forEach(s=>s.classList.toggle('on',s.dataset.p===p));$$('#pnav button').forEach(b=>{const on=b.dataset.pn===p;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
+$('#phone').addEventListener('click',e=>{let b;if(b=e.target.closest('[data-pn]'))pgo(b.dataset.pn);else if(b=e.target.closest('[data-pchar]')){startChat(+b.dataset.pchar);pgo('chat')}else if(b=e.target.closest('[data-chat]')){setChat(+b.dataset.chat);pgo('chat')}},true);
+
+/* flow */
+const FL=[['핵심 흐름',[['홈','accent'],['새 대화 · 모드 선택','sage'],['캐릭터 선택','peach'],['대화','sage'],['홈','accent']]],['캐릭터 둘러보기',[['홈','accent'],['캐릭터','peach'],['상세 시트','lav'],['대화 시작','sage']]],['말랑 켜기',[['설정','mist'],['애드온','butter'],['확장 가져오기','lav'],['말랑 켜기','accent']]]];
+$('#flows').innerHTML=FL.map(f=>`<div class="fl"><span class="lb">${f[0]}</span>${f[1].map((n,i)=>(i?ic('arrow',20).replace('class="ico"','class="ico ar"'):'')+`<span class="node" style="--c:${col(n[1])}"><em>${i+1}</em>${n[0]}</span>`).join('')}</div>`).join('');
+
+/* fit */
+function fit(){
+const w=$('#lapwrap').parentElement.clientWidth,s=Math.min(1,w/1280);
+frame.style.transform=`scale(${s})`;$('#lapwrap').style.height=620*s+'px';
+const pw=$('#phouter').parentElement.clientWidth;document.documentElement.style.setProperty('--ps',Math.min(1,(pw-4)/396))}
+addEventListener('resize',fit);
+
+/* init */
+hydrate(document);
+renderRail();renderSide();renderHome();renderGrid();renderPhone();hydrate($('#pnav'));
+$$('.ps .msgs, #s-chat .msgs').forEach(seed);
+['#s-chat','#phone [data-p="chat"]'].forEach(s=>wireChat($(s)));
+$('#cnt').textContent='12';
+matchMedia('(prefers-color-scheme: dark)').addEventListener&&matchMedia('(prefers-color-scheme: dark)').addEventListener('change',apply);
+apply();pgo('home');fit();
+</script>
