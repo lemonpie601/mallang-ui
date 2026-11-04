@@ -55,10 +55,11 @@ html[data-mallang="on"] {
   --marinara-topbar-surface: var(--ml-milk);
   --marinara-topbar-border: var(--ml-line);
   --marinara-shell-edge-border: var(--ml-line);
+  --marinara-page-backing: var(--ml-milk) !important;
   --marinara-app-accent-solid: var(--ml-focus);
-  --marinara-app-accent-static: var(--ml-focus);
+  --marinara-app-accent-static: var(--ml-focus) !important;
   --marinara-app-accent-gradient: linear-gradient(90deg, var(--ml-peach), var(--ml-lav), var(--ml-sage));
-  --marinara-app-accent-static-gradient: linear-gradient(90deg, var(--ml-peach), var(--ml-lav), var(--ml-sage));
+  --marinara-app-accent-static-gradient: linear-gradient(90deg, var(--ml-peach), var(--ml-lav), var(--ml-sage)) !important;
   --marinara-chat-chrome-accent: var(--ml-focus);
   --marinara-chat-chrome-accent-gradient: var(--marinara-app-accent-gradient);
   --marinara-chat-chrome-text: var(--ml-ink);

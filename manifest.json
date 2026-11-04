@@ -1,0 +1,13 @@
+{
+  "kind": "marinara.personal-extension",
+  "version": 1,
+  "config": {
+    "name": "Mallang",
+    "version": "0.1.0",
+    "description": "말랑말랑한 파스텔 테마: 통통한 외곽선 카드, 섹션별 색, 작은 노트북 화면용 촘촘한 레이아웃, 휴대폰 하단 탭.",
+    "runtime": "client",
+    "capabilities": ["full_page_access"],
+    "jsPath": "extension.js",
+    "cssPath": "extension.css"
+  }
+}

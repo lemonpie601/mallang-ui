@@ -67,6 +67,36 @@ cleanups.push(() => {
 root.setAttribute("data-mallang", "on");
 applyMotion();
 
+// Marinara paints html/body (iOS safe-area backing) from literal inline colours it computes
+// once per theme change; our stylesheet cannot beat inline !important, so mirror that here.
+const probe = document.createElement("i");
+probe.style.cssText = "position:fixed;width:0;height:0;pointer-events:none;visibility:hidden;background-color:var(--ml-milk)";
+const savedBacking = {
+  theme: root.getAttribute("data-theme"),
+  root: root.style.getPropertyValue("background-color"),
+  body: document.body.style.getPropertyValue("background-color"),
+  meta: document.querySelector('meta[name="theme-color"]')?.getAttribute("content") ?? null,
+};
+let paintTries = 0;
+const paintBacking = () => {
+  safe(() => {
+    document.body.append(probe);
+    const color = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    if (!color || color === "rgba(0, 0, 0, 0)") {
+      // The stylesheet may still be loading; try again shortly.
+      if (++paintTries < 12) later(paintBacking, 300);
+      return;
+    }
+    root.style.setProperty("background-color", color, "important");
+    document.body.style.setProperty("background-color", color, "important");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", color);
+  }, "page backing");
+};
+paintBacking();
+const themeObserver = new MutationObserver(() => later(paintBacking, 60));
+themeObserver.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+
 // Fonts: Marinara's CSP (style-src 'self' 'unsafe-inline', font-src 'self' data:)
 // blocks Google Fonts, so Mallang uses the system Korean font stack from the CSS.
 
@@ -205,11 +235,21 @@ marinara.onCleanup(() => {
   if (attachTimer && marinara.clearInterval) marinara.clearInterval(attachTimer);
   observer?.disconnect();
   observer = null;
+  themeObserver.disconnect();
+  probe.remove();
   for (const fn of cleanups.splice(0).reverse()) safe(fn, "cleanup");
   nav?.remove();
   nav = null;
   toast?.remove();
   toast = null;
+  safe(() => {
+    const restore = (el, value) => (value ? el.style.setProperty("background-color", value, "important") : el.style.removeProperty("background-color"));
+    if (root.getAttribute("data-theme") === savedBacking.theme) {
+      restore(root, savedBacking.root);
+      restore(document.body, savedBacking.body);
+      if (savedBacking.meta) document.querySelector('meta[name="theme-color"]')?.setAttribute("content", savedBacking.meta);
+    }
+  }, "restore backing");
   for (const name of ["data-mallang", "data-mallang-size", "data-mallang-short", "data-mallang-nav", "data-mallang-motion"]) {
     root.removeAttribute(name);
   }
